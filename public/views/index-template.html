@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+      // https://github.com/GoogleChromeLabs/tti-polyfill
+      !(function() {
+        if ('PerformanceLongTaskTiming' in window) {
+          var g = (window.__tti = { e: [] });
+          g.o = new PerformanceObserver(function(l) {
+            g.e = g.e.concat(l.getEntries());
+          });
+          g.o.observe({ entryTypes: ['longtask'] });
+        }
+      })();
+
+    </script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#000" />
+
+    <title>[[.AppTitle]]</title>
+
+    <base href="[[.AppSubUrl]]/" />
+
+    <link
+      rel="preload"
+      href="public/fonts/roboto/RxZJdnzeo3R5zSexge8UUVtXRa8TVwTICgirnJhmVJw.woff2"
+      as="font"
+      crossorigin
+    />
+
+    <link rel="icon" type="image/png" href="public/img/sphinx.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="[[.AppleTouchIcon]]" />
+    <link rel="mask-icon" href="public/img/sphinx.png" color="#F05A28" />
+
+    <link rel="stylesheet" href="public/build/grafana.[[ .Theme ]].<%= webpack.hash %>.css" />
+
+    <script>
+      performance.mark('css done blocking');
+    </script>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="msapplication-TileColor" content="#2b5797" />
+    <meta name="msapplication-config" content="public/img/browserconfig.xml" />
+  </head>
+
+  <body class="theme-[[ .Theme ]] [[.AppNameBodyClass]]">
+    <style>
+      .preloader {
+        height: 100%;
+        flex-direction: column;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .preloader__enter {
+        opacity: 0;
+        animation-name: preloader-fade-in;
+        animation-iteration-count: 1;
+        animation-duration: 0.9s;
+        animation-delay: 1.35s;
+        animation-fill-mode: forwards;
+      }
+
+      .preloader__bounce {
+        text-align: center;
+        animation-name: preloader-bounce;
+        animation-duration: 0.9s;
+        animation-iteration-count: infinite;
+      }
+
+      .preloader__logo {
+        display: inline-block;
+        animation-name: preloader-squash;
+        animation-duration: 0.9s;
+        animation-iteration-count: infinite;
+        width: 60px;
+        height: 60px;
+        background-repeat: no-repeat;
+        background-size: contain;
+        background-image: url("data:image/png;base64,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");
+      }
+
+      .preloader__text {
+        margin-top: 16px;
+        font-weight: 500;
+        font-size: 14px;
+        font-family: Sans-serif;
+        opacity: 0;
+        animation-name: preloader-fade-in;
+        animation-duration: 0.9s;
+        animation-delay: 1.8s;
+        animation-fill-mode: forwards;
+      }
+
+      .theme-light .preloader__text {
+        color: #52545c;
+      }
+
+      .theme-dark .preloader__text {
+        color: #d8d9da;
+      }
+
+      @keyframes preloader-fade-in {
+        0% {
+          opacity: 0;
+          /*animation-timing-function: linear;*/
+          animation-timing-function: cubic-bezier(0, 0, 0.5, 1);
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes preloader-bounce {
+        from,
+        to {
+          transform: translateY(0px);
+          animation-timing-function: cubic-bezier(0.3, 0, 0.1, 1);
+        }
+        50% {
+          transform: translateY(-50px);
+          animation-timing-function: cubic-bezier(0.9, 0, 0.7, 1);
+        }
+      }
+
+      @keyframes preloader-squash {
+        0% {
+          transform: scaleX(1.3) scaleY(0.8);
+          animation-timing-function: cubic-bezier(0.3, 0, 0.1, 1);
+          transform-origin: bottom center;
+        }
+        15% {
+          transform: scaleX(0.75) scaleY(1.25);
+          animation-timing-function: cubic-bezier(0, 0, 0.7, 0.75);
+          transform-origin: bottom center;
+        }
+        55% {
+          transform: scaleX(1.05) scaleY(0.95);
+          animation-timing-function: cubic-bezier(0.9, 0, 1, 1);
+          transform-origin: top center;
+        }
+        95% {
+          transform: scaleX(0.75) scaleY(1.25);
+          animation-timing-function: cubic-bezier(0, 0, 0, 1);
+          transform-origin: bottom center;
+        }
+        100% {
+          transform: scaleX(1.3) scaleY(0.8);
+          transform-origin: bottom center;
+          animation-timing-function: cubic-bezier(0, 0, 0.7, 1);
+        }
+      }
+
+      /* Fail info */
+      .preloader__text--fail {
+        display: none;
+      }
+
+      /* stop logo animation */
+      .preloader--done .preloader__bounce,
+      .preloader--done .preloader__logo {
+        animation-name: none;
+        display: none;
+      }
+
+      .preloader--done .preloader__logo,
+      .preloader--done .preloader__text {
+        display: none;
+        color: #ff5705 !important;
+        font-size: 15px;
+      }
+
+      .preloader--done .preloader__text--fail {
+        display: block;
+      }
+
+      [ng\:cloak],
+      [ng-cloak],
+      .ng-cloak {
+        display: none !important;
+      }
+    </style>
+
+    <div class="preloader">
+      <div class="preloader__enter">
+        <div class="preloader__bounce">
+          <div class="preloader__logo"></div>
+        </div>
+      </div>
+      <div class="preloader__text">Loading Sphinx</div>
+      <div class="preloader__text preloader__text--fail">
+        <p>
+          <strong>If you're seeing this then the Interactive Dashboards has failed to load its application files</strong>
+          <br />
+          <br />
+        </p>href="favicon
+        <p>
+          1. This could be caused by your reverse proxy settings.<br /><br />
+          2. If you host grafana under subpath make sure your grafana.ini root_url setting includes subpath. If not using a reverse proxy make sure to set serve_from_sub_path to true.<br />
+          <br />
+          3. If you have a local dev build make sure you build frontend using: yarn start, yarn start:hot, or yarn
+          build<br />
+          <br />
+          4. Sometimes restarting grafana-server can help<br />
+        </p>
+      </div>
+    </div>
+
+    <grafana-app class="grafana-app" ng-cloak>
+      <sidemenu class="sidemenu"></sidemenu>
+      <app-notifications-list class="page-alert-list"></app-notifications-list>
+      <search-wrapper></search-wrapper>
+
+      <div class="main-view">
+				<div ng-view class="scroll-canvas"></div>
+      </div>
+    </grafana-app>
+
+    <script>
+        window.grafanaBootData = {
+          user: [[.User]],
+          settings: [[.Settings]],
+          navTree: [[.NavTree]]
+        };
+
+      // In case the js files fails to load the code below will show an info message.
+        window.onload = function() {
+          var preloader = document.getElementsByClassName("preloader");
+          if (preloader.length) {
+            preloader[0].className = "preloader preloader--done";
+          }
+        };
+    </script>
+
+    [[if .GoogleTagManagerId]]
+    <!-- Google Tag Manager -->
+    <script>
+      dataLayer = [
+        {
+          IsSignedIn: '[[.User.IsSignedIn]]',
+          Email: '[[.User.Email]]',
+          Name: '[[.User.Name]]',
+          UserId: '[[.User.Id]]',
+          OrgId: '[[.User.OrgId]]',
+          OrgName: '[[.User.OrgName]]',
+        },
+      ];
+    </script>
+    <noscript>
+      <iframe
+        src="//www.googletagmanager.com/ns.html?id=[[.GoogleTagManagerId]]"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      ></iframe>
+    </noscript>
+    <script>
+      (function(w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = '//www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', '[[.GoogleTagManagerId]]');
+    </script>
+    <!-- End Google Tag Manager -->
+    [[end]]
+
+    <%
+    for (key in htmlWebpackPlugin.files.chunks) { %><%
+      if (htmlWebpackPlugin.files.jsIntegrity) { %>
+    <script
+      src="<%= htmlWebpackPlugin.files.chunks[key].entry %>"
+      type="text/javascript"
+      integrity="<%= htmlWebpackPlugin.files.jsIntegrity[htmlWebpackPlugin.files.js.indexOf(htmlWebpackPlugin.files.chunks[key].entry)] %>"
+      crossorigin="<%= webpackConfig.output.crossOriginLoading %>"></script><%
+      } else { %>
+    <script src="<%= htmlWebpackPlugin.files.chunks[key].entry %>" type="text/javascript"></script><%
+      } %><%
+    } %>
+    <script>
+      performance.mark('js done blocking');
+    </script>
+  </body>
+</html>
